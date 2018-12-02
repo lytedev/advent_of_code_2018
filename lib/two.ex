@@ -43,6 +43,7 @@ defmodule Two do
   def part2(id_list) do
     id_list
     |> jaro_compare_permute_all()
+    |> List.flatten()
     |> Enum.reduce({"", "", 0}, fn {id1, id2, jd}, {aid1, aid2, ajd} ->
       if jd > ajd do
         {id1, id2, jd}
@@ -77,7 +78,6 @@ defmodule Two do
 
   def jaro_compare_permute_all([h | t]) do
     [jaro_compare(h, t) |> Enum.map(fn {c, jd} -> {h, c, jd} end) | jaro_compare_permute_all(t)]
-    |> List.flatten()
   end
 
   def id_checker(s) do

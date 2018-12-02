@@ -2,6 +2,7 @@ defmodule One do
   def input() do
     File.read!("./inputs/one.txt")
     |> String.split("\n", trim: true)
+    |> Enum.map(&String.to_integer/1)
   end
 
   @doc """
@@ -9,38 +10,25 @@ defmodule One do
       iex> One.part1(One.input())
       416
   """
-  def part1(list) do
-    list
-    |> Enum.map(&parse_integer/1)
-    |> Enum.sum()
-  end
+  def part1(list, initial_freq \\ 0), do: initial_freq + Enum.sum(list)
 
   @doc """
-  This solution seems to run much slower than I would like.
   https://adventofcode.com/2018/day/1#part2
       iex> One.part2(One.input())
       56752
   """
-  def part2(list) do
+  def part2(list, initial_freq \\ 0) do
     list
-    |> Enum.map(&parse_integer/1)
     |> Stream.cycle()
-    |> Stream.transform([0], fn i, [x | t] ->
-      if Enum.member?(t, x) do
-        {:halt, [x | t]}
-      else
-        {[i + x], [i + x | [x | t]]}
-      end
-    end)
-    |> Enum.to_list()
-    |> Enum.reverse()
-    |> List.first()
+    |> Enum.reduce_while({initial_freq, %{initial_freq => true}}, &until_member/2)
   end
 
-  def parse_integer(s) do
-    s
-    |> String.trim_leading("+")
-    |> Integer.parse()
-    |> elem(0)
+  defp until_member(i, {last, acc}) do
+    new_last = i + last
+
+    case Map.has_key?(acc, new_last) do
+      true -> {:halt, new_last}
+      _ -> {:cont, {new_last, Map.put(acc, new_last, true)}}
+    end
   end
 end
