@@ -18,17 +18,19 @@ defmodule One do
       56752
   """
   def part2(list, initial_freq \\ 0) do
+    acc = {initial_freq, MapSet.new([initial_freq])}
+
     list
     |> Stream.cycle()
-    |> Enum.reduce_while({initial_freq, %{initial_freq => true}}, &until_member/2)
+    |> Enum.reduce_while(acc, &until_member/2)
   end
 
-  defp until_member(i, {last, acc}) do
+  defp until_member(i, {last, set}) do
     new_last = i + last
 
-    case Map.has_key?(acc, new_last) do
+    case MapSet.member?(set, new_last) do
       true -> {:halt, new_last}
-      _ -> {:cont, {new_last, Map.put(acc, new_last, true)}}
+      _ -> {:cont, {new_last, MapSet.put(set, new_last)}}
     end
   end
 end
