@@ -1,17 +1,18 @@
 defmodule Two do
-  def input() do
-    File.read!("./inputs/two.txt")
-    |> String.split("\n", trim: true)
+  def input_stream() do
+    File.stream!("./inputs/two.txt", [:read])
+    |> Stream.map(&String.trim/1)
   end
 
   @doc """
   I'm sure this can be greatly simplified and more DRY.
   https://adventofcode.com/2018/day/2
-      iex> Two.part1(Two.input())
+      iex> Two.part1(Two.input_stream())
       6696
   """
   def part1(id_list) do
     id_list
+    |> Enum.to_list()
     |> Enum.map(&id_checker/1)
     |> Enum.reduce(%{two: 0, three: 0}, fn %{has_two: two, has_three: three}, acc ->
       acc
@@ -37,11 +38,12 @@ defmodule Two do
 
   @doc """
   https://adventofcode.com/2018/day/2#part2
-      iex> Two.part2(Two.input())
+      iex> Two.part2(Two.input_stream())
       "bvnfawcnyoeyudzrpgslimtkj"
   """
   def part2(id_list) do
     id_list
+    |> Enum.to_list()
     |> jaro_compare_permute_all()
     |> List.flatten()
     |> Enum.reduce({"", "", 0}, fn {id1, id2, jd}, {aid1, aid2, ajd} ->

@@ -1,20 +1,20 @@
 defmodule One do
-  def input() do
-    File.read!("./inputs/one.txt")
-    |> String.split("\n", trim: true)
-    |> Enum.map(&String.to_integer/1)
+  def input_stream() do
+    File.stream!("./inputs/one.txt", [:read])
+    |> Stream.map(&String.trim_trailing/1)
+    |> Stream.map(&String.to_integer/1)
   end
 
   @doc """
   https://adventofcode.com/2018/day/1
-      iex> One.part1(One.input())
+      iex> One.part1(One.input_stream())
       416
   """
   def part1(list, initial_freq \\ 0), do: initial_freq + Enum.sum(list)
 
   @doc """
   https://adventofcode.com/2018/day/1#part2
-      iex> One.part2(One.input())
+      iex> One.part2(One.input_stream())
       56752
   """
   def part2(list, initial_freq \\ 0) do
