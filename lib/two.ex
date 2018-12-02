@@ -4,6 +4,9 @@ defmodule Two do
     |> Stream.map(&String.trim/1)
   end
 
+  def bool_int(true), do: 1
+  def bool_int(false), do: 0
+
   @doc """
   I'm sure this can be greatly simplified and more DRY.
   https://adventofcode.com/2018/day/2
@@ -12,28 +15,18 @@ defmodule Two do
   """
   def part1(id_list) do
     id_list
-    |> Enum.to_list()
-    |> Enum.map(&id_checker/1)
-    |> Enum.reduce(%{two: 0, three: 0}, fn %{has_two: two, has_three: three}, acc ->
-      acc
-      |> Map.put(
-        :two,
-        if two do
-          acc.two + 1
-        else
-          acc.two
-        end
-      )
-      |> Map.put(
-        :three,
-        if three do
-          acc.three + 1
-        else
-          acc.three
-        end
-      )
+    |> Stream.map(fn s ->
+      s
+      |> String.codepoints()
+      |> Enum.reduce(%{}, fn l, acc -> Map.update(acc, l, 1, &(&1 + 1)) end)
+      |> Map.values()
+      |> MapSet.new()
     end)
-    |> (fn t -> t.three * t.two end).()
+    |> Enum.to_list()
+    |> Enum.reduce({0, 0}, fn s, {twos, threes} ->
+      {twos + bool_int(2 in s), threes + bool_int(3 in s)}
+    end)
+    |> (fn {twos, threes} -> twos * threes end).()
   end
 
   @doc """
@@ -80,20 +73,5 @@ defmodule Two do
 
   def jaro_compare_permute_all([h | t]) do
     [jaro_compare(h, t) |> Enum.map(fn {c, jd} -> {h, c, jd} end) | jaro_compare_permute_all(t)]
-  end
-
-  def id_checker(s) do
-    s
-    |> String.codepoints()
-    |> Enum.reduce(%{}, fn l, acc ->
-      Map.update(acc, l, 1, &(&1 + 1))
-    end)
-    |> Enum.reduce(%{has_two: false, has_three: false}, fn {k, v}, acc ->
-      case v do
-        2 -> %{acc | has_two: true}
-        3 -> %{acc | has_three: true}
-        _ -> acc
-      end
-    end)
   end
 end
