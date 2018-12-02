@@ -1,6 +1,7 @@
 defmodule One do
   def input_stream() do
     File.stream!("./inputs/one.txt", [:read])
+    # parallelize?
     |> Stream.map(&String.trim_trailing/1)
     |> Stream.map(&String.to_integer/1)
   end
@@ -28,7 +29,7 @@ defmodule One do
   defp until_member(i, {last, set}) do
     new_last = i + last
 
-    case MapSet.member?(set, new_last) do
+    case new_last in set do
       true -> {:halt, new_last}
       _ -> {:cont, {new_last, MapSet.put(set, new_last)}}
     end
