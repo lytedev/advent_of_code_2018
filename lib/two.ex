@@ -1,77 +1,40 @@
 defmodule Two do
-  def input_stream() do
-    File.stream!("./inputs/two.txt", [:read])
-    |> Stream.map(&String.trim/1)
-  end
-
   def bool_int(true), do: 1
   def bool_int(false), do: 0
 
-  @doc """
-  I'm sure this can be greatly simplified and more DRY.
-  https://adventofcode.com/2018/day/2
-      iex> Two.part1(Two.input_stream())
-      6696
-  """
   def part1(id_list) do
     id_list
-    |> Stream.map(fn s ->
-      s
+    |> Stream.map(fn id ->
+      id
       |> String.codepoints()
       |> Enum.reduce(%{}, fn l, acc -> Map.update(acc, l, 1, &(&1 + 1)) end)
       |> Map.values()
       |> MapSet.new()
     end)
     |> Enum.to_list()
-    |> Enum.reduce({0, 0}, fn s, {twos, threes} ->
-      {twos + bool_int(2 in s), threes + bool_int(3 in s)}
+    |> Enum.reduce([0, 0], fn s, [x, y] ->
+      [x + bool_int(2 in s), y + bool_int(3 in s)]
     end)
-    |> (fn {twos, threes} -> twos * threes end).()
+    |> Enum.reduce(1, fn i, a -> a * i end)
   end
 
-  @doc """
-  https://adventofcode.com/2018/day/2#part2
-      iex> Two.part2(Two.input_stream())
-      "bvnfawcnyoeyudzrpgslimtkj"
-  """
   def part2(id_list) do
     id_list
+    |> Stream.map(&String.trim_trailing/1)
     |> Enum.to_list()
-    |> jaro_compare_permute_all()
+    |> permute_all_pairs()
     |> List.flatten()
-    |> Enum.reduce({"", "", 0}, fn {id1, id2, jd}, {aid1, aid2, ajd} ->
-      if jd > ajd do
-        {id1, id2, jd}
-      else
-        {aid1, aid2, ajd}
+    |> Enum.reduce_while("", fn {id1, id2}, _ ->
+      case String.myers_difference(id1, id2) do
+        [eq: p1, del: <<_x::size(8)>>, ins: <<_y::size(8)>>, eq: p2] -> {:halt, p1 <> p2}
+        _ -> {:cont, ""}
       end
     end)
-    |> (fn {id1, id2, _jd} ->
-          [eq: p1, del: _, ins: _, eq: p2] = String.myers_difference(id1, id2)
-          p1 <> p2
-        end).()
   end
 
-  @doc """
-  Calculates the jaro_distance between the given string and each string in the
-  list, returning a tuple with the compared string and the jaro distance.
-  """
-  @spec jaro_compare(binary, [binary]) :: [{binary, float}]
-  def jaro_compare(s, []), do: []
+  def permute_all_pairs([]), do: []
+  def permute_all_pairs(list), do: [permute_pairs(list) | permute_all_pairs(tl(list))]
 
-  def jaro_compare(s, [h | t]) do
-    [{h, String.jaro_distance(s, h)} | jaro_compare(s, t)]
-  end
-
-  @doc """
-  Recursively calculates the jaro distance between every permutation of two
-  items in the list.
-  """
-  @spec jaro_compare_permute_all([binary]) :: [{binary, binary, float}]
-  def jaro_compare_permute_all([]), do: []
-  def jaro_compare_permute_all([h | []]), do: []
-
-  def jaro_compare_permute_all([h | t]) do
-    [jaro_compare(h, t) |> Enum.map(fn {c, jd} -> {h, c, jd} end) | jaro_compare_permute_all(t)]
-  end
+  def permute_pairs([]), do: []
+  def permute_pairs([cur | rest]), do: Enum.map(rest, &{cur, &1})
 end
