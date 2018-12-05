@@ -23,8 +23,8 @@ defmodule AdventOfCode2018Test do
   @tag :current_day
   @doc "https://adventofcode.com/2018/day/3"
   test "Day 3" do
-    # input_stream = File.stream!("./inputs/three.txt", [:read])
-    assert Three.part1(nil) == nil
-    assert Three.part2(nil) == nil
+    input_stream = File.stream!("./inputs/three.txt", [:read])
+    assert Three.part1(input_stream) == nil
+    assert Three.part2(input_stream) == nil
   end
 end
