@@ -1,21 +1,14 @@
-# AdventOfCode2018
+# Advent of Code 2018
 
-**TODO: Add description**
+Herein lies my Elixir solutions for the Advent of Code 2018 puzzles.
 
-## Installation
+## Approach
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `advent_of_code_2018` to your list of dependencies in `mix.exs`:
+My approach to each problem involves the following procedure:
 
-```elixir
-def deps do
-  [
-    {:advent_of_code_2018, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/advent_of_code_2018](https://hexdocs.pm/advent_of_code_2018).
-
+1. Write an initial solution for each puzzle with no help beyond code
+	 documentation.
+2. Rewrite initial solutions to improve the code's readability and performance.
+3. Watch José Valim (the author of Elixir) solve the solutions.
+4. Refactor again, keeping the core of my solution intact (unless truly awful),
+	 but applying anything interesting learned from his solution.
