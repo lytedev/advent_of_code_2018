@@ -23,8 +23,19 @@ defmodule AdventOfCode2018Test do
   @tag :current_day
   @doc "https://adventofcode.com/2018/day/3"
   test "Day 3" do
-    input_stream = File.stream!("./inputs/three.txt", [:read])
-    assert Three.part1(input_stream) == nil
-    assert Three.part2(input_stream) == nil
+    test_input =
+      """
+      #1 @ 1,3: 4x4
+      #2 @ 3,1: 4x4
+      #3 @ 5,5: 2x2
+      """
+      |> String.split("\n", trim: true)
+
+    # expected_result = MapSet.new([{4, 4}, {5, 4}, {4, 5}, {5, 5}])
+    expected_result_part1 = 4
+    expected_result_part2 = 3
+
+    assert Three.part1(test_input) == expected_result_part1
+    assert Three.part2(test_input) == expected_result_part2
   end
 end
